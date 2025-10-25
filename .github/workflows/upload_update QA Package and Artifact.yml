@@ -1,4 +1,4 @@
-name: Push to CPI QA package 
+name: Push to CPI QA package
 
 on:
   workflow_dispatch:
@@ -23,7 +23,7 @@ jobs:
         run: cpilint -rules rules/demo-rules.xml -files DEMO_IFLOW_QA.zip -boring -skipvercheck
 
       - name: Upload iflow zip as artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: DEMO_IFLOW_QA
           path: DEMO_IFLOW_QA.zip
@@ -39,7 +39,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Download iflow zip artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: DEMO_IFLOW_QA
           path: TrialTenantToGIT/DEMO_IFLOW_QA.zip
