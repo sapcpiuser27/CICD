@@ -1,4 +1,4 @@
-name: Push to CPI QA package
+name: Push to CPI QA package with QA prop file
 
 on:
   workflow_dispatch:
