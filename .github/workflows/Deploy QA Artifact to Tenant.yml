@@ -1,0 +1,23 @@
+name: Deploy QA Artifact to Tenant
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    container:
+      image: engswee/flashpipe:latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Deploy to runtime
+      - name: 'Deploy iflow to run time'
+        uses: engswee/flashpipe-action/deploy@v1
+        with:
+          tmn-host: ${{ vars.API_ENDPOINT_TMN_HOST }}
+          oauth-host: ${{ vars.OAUTH_HOST }}
+          oauth-clientid: ${{ secrets.DEV_CLIENT_ID }}
+          oauth-clientsecret: ${{ secrets.DEV_CLIENT_SECRET }}
+          artifact-ids: DEMO_IFLOW_QA
