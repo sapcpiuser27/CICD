@@ -16,11 +16,17 @@ jobs:
       - name: Zip the iflow (pre-CPILint 1.1.0 workaround)
         run: |
           cd TrialTenantToGIT/DEMO_IFLOW_QA
-          zip -r ../DEMO_IFLOW_QA.zip *
-          cd ..
+          zip -r ../../DEMO_IFLOW_QA.zip *
+          cd ../..
 
       - name: Run the CPILint checks
         run: cpilint -rules rules/demo-rules.xml -files DEMO_IFLOW_QA.zip -boring -skipvercheck
+
+      - name: Upload iflow zip as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: DEMO_IFLOW_QA
+          path: DEMO_IFLOW_QA.zip
 
   build:
     needs: run-checks
@@ -31,6 +37,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Download iflow zip artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: DEMO_IFLOW_QA
+          path: TrialTenantToGIT/DEMO_IFLOW_QA.zip
 
       # Upload/Update design time artifact
       - name: Update/Upload iflow to design time
