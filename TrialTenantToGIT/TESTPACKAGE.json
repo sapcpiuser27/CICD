@@ -1,0 +1,10 @@
+{
+  "d": {
+    "Id": "TESTPACKAGE",
+    "Name": "TEST_PACKAGE",
+    "Description": "\u003cp\u003e\u003c/p\u003e",
+    "ShortText": "Pacakge to test CI CD pipeline",
+    "Version": "1.0.0",
+    "Mode": "EDIT_ALLOWED"
+  }
+}
