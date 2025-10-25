@@ -1,0 +1,63 @@
+name: Push to CPI QA package
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run-checks:
+    runs-on: ubuntu-latest
+    container:
+      image: cpilint/cpilint:1.0.5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.2.2
+
+      - name: Copy prop file and Zip the iflow
+        run: |
+          # Copy and rename the properties file into the iflow folder
+          cp TrialTenantToGIT/QA/parameters_QA.prop TrialTenantToGIT/DEMO_IFLOW/parameters.prop
+          
+          # Zip the folder into DEMO_IFLOW_QA.zip
+          cd TrialTenantToGIT/DEMO_IFLOW
+          zip -r ../../DEMO_IFLOW_QA.zip *
+          cd ../..
+
+      - name: Run the CPILint checks
+        run: cpilint -rules rules/demo-rules.xml -files DEMO_IFLOW_QA.zip -boring -skipvercheck
+
+      - name: Upload iflow zip as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DEMO_IFLOW_QA
+          path: DEMO_IFLOW_QA.zip
+
+  build:
+    needs: run-checks
+    runs-on: ubuntu-latest
+    container:
+      image: engswee/flashpipe:latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download iflow zip artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: DEMO_IFLOW_QA
+          path: TrialTenantToGIT/DEMO_IFLOW_QA.zip
+
+      # Upload/Update design time artifact
+      - name: Update/Upload iflow to design time
+        uses: engswee/flashpipe-action/update/artifact@v1
+        with:
+          tmn-host: ${{ vars.API_ENDPOINT_TMN_HOST }}
+          oauth-host: ${{ vars.OAUTH_HOST }}
+          oauth-clientid: ${{ secrets.DEV_CLIENT_ID }}
+          oauth-clientsecret: ${{ secrets.DEV_CLIENT_SECRET }}
+          artifact-id: DEMO_IFLOW_QA
+          artifact-name: DEMO_IFLOW_QA
+          package-id: TESTPACKAGEQA
+          package-name: TEST_PACKAGE_QA
+          dir-artifact-relative: TrialTenantToGIT/DEMO_IFLOW
